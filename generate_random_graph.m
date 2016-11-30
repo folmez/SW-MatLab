@@ -34,7 +34,7 @@ if strcmp(type,'ER')
     nr_edges_hat = round(N*(N-1)/2*par1);
     mean_degree_hat = 2*round(N*(N-1)/2*par1)/N;
     
-    fprintf('N = %i, #edges = %i, p = %1.3f, d = %2.3f \n', ...
+    fprintf('\tN = %i, #edges = %i, p = %1.3f, d = %2.3f \n', ...
         N, nr_edges_hat, par1_hat, mean_degree_hat);
     
     if nr_edges_hat ~= N-1
@@ -68,7 +68,7 @@ if strcmp(type,'ER')
                             display_best_mean_degree_so_far_results
                         current_best_mean_deg = mean(sum(adjacency_matrix),2);
                         current_best_mean_degree_error = mean_degree_error;
-                        fprintf('Best mean degree so far is %2.2f with %i edges\n', ...
+                        fprintf('\tBest mean degree so far is %2.2f with %i edges\n', ...
                             current_best_mean_deg, sum(sum(adjacency_matrix))/2);
                     end
                 end
@@ -154,7 +154,7 @@ elseif strcmp(type,'SF')
     
 elseif strcmp(type, 'SF-Chung-Lu')
     %% Added on 10-9-2016
-    addpath scratch/
+    addpath generate_network_configuration/SF_Chung_Lu/
     addpath ../power-law-estimator/
     
     mean_degree_goal = par1;  
@@ -166,7 +166,7 @@ elseif strcmp(type, 'SF-Chung-Lu')
     % the same mean as the input
     alpha = determine_alpha(N, mean_degree_goal, 1);
 
-    fprintf('N = %i, #edges = %i, alpha = %1.2f, d = %2.3f \n', ...
+    fprintf('\tN = %i, #edges = %i, alpha = %1.2f, d = %2.3f \n', ...
         N, nr_edges_hat, alpha, mean_degree_goal);
     
     current_best_mean_degree_error = inf;
@@ -203,8 +203,8 @@ end
 mean_degree = sum(sum(adjacency_matrix))/N;
 % mean degree for Erdos-Renyi graph is N*p(N)
 
-fprintf('Mean degree = %6.4f\n', mean_degree);
-fprintf('Adjacency matrix generation took %3.2f minutes\n\n',toc(tSIM)/60);
+fprintf('\tDesired mean degree achieved = %6.4f\n', mean_degree);
+fprintf('\tTime spent = %3.2f minutes\n\n',toc(tSIM)/60);
 end
 % ----------------------------------------------------------------------
 function connected_or_not = isgraphconnected(G)
