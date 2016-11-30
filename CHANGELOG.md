@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 0.0.2 - 2016-11-30
 ### Changed
 - Minor changes in "generate_random_graph.m"
+
 ### Added
 - "do_SW_drift_diffusion_analysis.m" is added. All related parts of "SW_network.m" are moved there.
 - "fit_PL_and_EXP_to_SW_bouts.m" is added. All parts of "SW_network.m" related to bounded power-law and exponential distribution fitting to SW bout durations are moved there. 
