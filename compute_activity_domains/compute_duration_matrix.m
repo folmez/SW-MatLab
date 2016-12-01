@@ -1,8 +1,11 @@
 function duration_matrix = compute_duration_matrix(varargin)
+addpath ../../power-law-estimator/
+
 %   COMPUTE_DURATION_MATRIX calculates intervals of activity switched
 %   between two graphs by using a transition-based method. Duration matrix
 %   is the output that contains all interval lengths and types
-% ------------------------------------------------------------------------
+
+%% Input parameters
 t = varargin{1};
 WE = varargin{2};
 SE = varargin{3};
@@ -14,7 +17,7 @@ display_duration_matrix_summary = 1;
 plot_transition_bouts = 0;
 plot_stuff_for_accuracy = 0;
 plot_pdfs_for_all_intervals = 0;
-% ------------------------------------------------------------------------
+
 i = 8;
 while i<=length(varargin),
     switch varargin{i},
@@ -32,7 +35,8 @@ while i<=length(varargin),
     end
     i = i+2;
 end
-% ------------------------------------------------------------------------
+
+%% Model
 newState = zeros(nr_events,1);
 % Note that the matrix A is defined by adding +1 to WE and SE!
 tAD = tic;
@@ -74,7 +78,8 @@ wi = new_durations(new_duration_types==1);
 ti = new_durations(new_duration_types==0);
 
 duration_matrix = [new_durations new_duration_types];
-% ------------------------------------------------------------------------
+
+%% Plot stuff
 if plot_transition_bouts
     bt = ti(ti<nr_of_means*mean(ti) & ti>m);
     [btn,btx] = hist(bt,round(max(bt)-min(bt))/quot);
@@ -84,7 +89,7 @@ if plot_transition_bouts
     subplot(1,2,2); semilogy(btx,btn,'b.-');
     title(sim_title);
 end
-% ------------------------------------------------------------------------
+
 if plot_stuff_for_accuracy
     for i=0:10
         figure
@@ -101,7 +106,7 @@ if plot_stuff_for_accuracy
         hold off
     end
 end
-% ------------------------------------------------------------------------
+
 if plot_pdfs_for_all_intervals
     figure,
     subplot(1,2+~isempty(ti),1);
@@ -116,7 +121,8 @@ if plot_pdfs_for_all_intervals
             'Transition intervals', 'plot_on_new_fig', 0);
     end
 end
-% ------------------------------------------------------------------------
+
+%% Display stuff
 if display_duration_matrix_summary
     fprintf('\nINTERVAL CALCULATION SUMMARY\n');
     fprintf(sim_title);
@@ -132,4 +138,5 @@ if display_duration_matrix_summary
     fprintf('\nFraction of wake time: %6.4f',sum(wi)/t(end));
     fprintf('\nFraction of transition time: %6.4f\n',sum(ti)/t(end));
 end
+
 end
