@@ -8,21 +8,20 @@ AA = varargin{3};               % Adjacency matrix of the cluster for which
 OO = varargin{4};               % Adjacency matrix of the (O)pposite cluster
 rule = varargin{5};             % Inhibition rule
 % mean_tolerance = varargin{6};   % Tolerance on the mean inhibition degree
-% ------------------------------------------------------------------------
-plot_inhibitory_degree_distributions = 0;
+
 display_best_mean_degree_so_far_results = 1;
-% ------------------------------------------------------------------------
+
 inh_mat = zeros(nA, nO);
 
-if inhPar >= 1 % then it's the average number of inhibition degree
-    inhPar = inhPar / nO;
-end
-
 current_best_mean_degree_error = inf;
+
 if strcmp(rule, 'ER-like')
+    %% ER-like  
+    inhPar = inhPar / nO;
+    
     % Error is q is not a probability
     if inhPar<0 || inhPar>1
-        error('The inhibition probabilit parameter q must be in [0,1].');
+        error('The inhibition probability parameter q must be in [0,1].');
     end
     
     nr_inh_edges_hat = round(nA*nO*inhPar);
@@ -31,8 +30,8 @@ if strcmp(rule, 'ER-like')
     
     
     % Give summary of construction
-    fprintf('\nGenerating %ix%i inhibition matrix with parameters...\n', ...
-        nA, nO);
+    fprintf(['\nGenerating ER-like %ix%i inhibition matrix ' ...
+        'with parameters...\n'], nA, nO);
     fprintf('\tN = %i, #inh edges = %i, q = %1.4f, di = %2.3f\n', ...
         nA, nr_inh_edges_hat, q_N, mean_inh_deg_hat);
     
@@ -55,7 +54,9 @@ if strcmp(rule, 'ER-like')
             break;
         end
     end
-elseif strcmp(rule, 'Scale-free')
+    
+elseif strcmp(rule, 'SF-like')
+    %% SF-like
     % 1) Construct degree distributions
     % 2) Form inhibitory links uniformly
     
@@ -64,9 +65,12 @@ elseif strcmp(rule, 'Scale-free')
     inh_deg_CDF = ((1:nO+1)').^(1-alpha);   
     inh_deg_CDF = cumsum(inh_deg_CDF)./sum(inh_deg_CDF); % CDF
     degrees = (0:nO)';
+    mean_tolerance = 0.001;
     
-    fprintf('\nGenerating %ix%i inhibition matrix with parameters...\n', nA, nO);
-    fprintf([rule '\n']);
+    fprintf(['\nGenerating SF-like %ix%i inhibition matrix ' ...
+        'with parameters...\n'], nA, nO);
+    fprintf('From a discrete power-law in [%i, %i], ', 0, nO);
+    fprintf('with alpha = %1.2f\n', alpha);
     fprintf('dI in (%6.4f,%6.4f), with exponent %1.2f\n', ...
         inhPar - mean_tolerance, inhPar + mean_tolerance, alpha);
     
@@ -99,9 +103,10 @@ elseif strcmp(rule, 'Scale-free')
     % Construct inhibition matrix
     inh_mat = zeros(nA,nO);
     for i=1:nA
-        which_nodes_are_inhibited = randperm(nO,random_inh_degrees(i));
-        inh_mat(i,which_nodes_are_inhibited) = 1;
+        which_nodes_are_inhibited = randperm(nO, random_inh_degrees(i));
+        inh_mat(i, which_nodes_are_inhibited) = 1;
     end
+    
 elseif strcmp(rule, 'Excitatory and inhibitory strengths are same for each node')
     deg = sum(AA,2);
     inh_mat = rand(N)< (deg/(N-1) * ones(1,N));
@@ -113,12 +118,13 @@ elseif strcmp(rule, 'Sleep is star')
 elseif strcmp(rule, 'Wake is star')
     inh_mat(1,:)=1;
 end
-% ------------------------------------------------------------------------
-if plot_inhibitory_degree_distributions
-    hist(sum(inh_mat,2));
-    title('Inhibitory degree distributions');
-end
-% ------------------------------------------------------------------------
+
+% plot_inhibitory_degree_distributions = 0;
+% if plot_inhibitory_degree_distributions
+%     hist(sum(inh_mat,2));
+%     title('Inhibitory degree distributions');
+% end
+
 % mean inhibitory degree
 mean_inh_deg = sum(sum(inh_mat))/nA;
 
