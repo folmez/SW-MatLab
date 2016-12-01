@@ -86,18 +86,28 @@ end
 %% Plot degree distributions
 if plot_degree_dist
     figure,
+
     subplot(2,2,1),
-    hist(sum(WW),10);
-    title('Wake cluster degree distribution');
+    histogram(sum(WW));
+    title('Wake degree dist');
+    legend(['de_W=' num2str(dW)]);
+    
     subplot(2,2,2),
-    hist(sum(SS),10);
-    title('Sleep cluster degree distribution');
+    histogram(sum(SS));
+    title('Sleep degree dist');
+    legend(['de_S=' num2str(dS)]);
+    
     subplot(2,2,3),
-    hist(sum(WS,2),10);
-    title('Wake to Sleep inhibitory degree distribution');
+    histogram(sum(WS,2));
+    title('W->S inh. deg. dist.');
+    legend(['di_W_-_>_S=' num2str(dIW)]);
+    
     subplot(2,2,4),
-    hist(sum(SW,2),10);
-    title('Sleep to Wake inhibitory degree distribution');
+    histogram(sum(SW,2));
+    title('S->W inh. deg. dist.');
+    legend(['di_S_-_>_W=' num2str(dIS)]);
+    
+    drawnow;
 end
 
 %% Output arguments

@@ -11,6 +11,9 @@ wake_bouts_half_trans = varargin{6};
 display_p_val_stuff = varargin{7};
 nr_reps = varargin{8};
 fit_PL = varargin{9};
+fit_exp = varargin{10};
+need_apKS = varargin{11};
+sim_title = varargin{12};
 
 %% Model
 
@@ -62,7 +65,7 @@ else
 end
 
 % Fit exponential distribution to bout tails
-if fit_exp_to_tail
+if fit_exp
     exp_tail_sbpt = fit_exponential_to_tail(sleep_bouts_prev_trans, ...
         'plot_stuff', 0);
     exp_tail_wbpt = fit_exponential_to_tail(wake_bouts_prev_trans, ...
@@ -85,7 +88,30 @@ else
 end
 
 %% Plot bounded power-law fits
-plot_sleep_wake_bouts_PL_results(SW_exp);
+temp_SW_exp.bouts.wake.no_trans.data = wake_intervals;
+temp_SW_exp.bouts.wake.prev_trans.data = wake_bouts_prev_trans;
+temp_SW_exp.bouts.wake.half_trans.data = wake_bouts_half_trans;
+temp_SW_exp.bouts.sleep.no_trans.data = sleep_intervals;
+temp_SW_exp.bouts.sleep.prev_trans.data = sleep_bouts_prev_trans;
+temp_SW_exp.bouts.sleep.half_trans.data = sleep_bouts_half_trans;
+
+temp_SW_exp.bouts.wake.no_trans.PL = PL_wbnt;
+temp_SW_exp.bouts.wake.prev_trans.PL = PL_wbpt;
+temp_SW_exp.bouts.wake.half_trans.PL = PL_wbht;
+temp_SW_exp.bouts.sleep.no_trans.PL = PL_sbnt;
+temp_SW_exp.bouts.sleep.prev_trans.PL = PL_sbpt;
+temp_SW_exp.bouts.sleep.half_trans.PL = PL_sbht;
+
+temp_SW_exp.bouts.wake.prev_trans.exp_tail = exp_tail_wbpt;
+temp_SW_exp.bouts.wake.no_trans.exp_tail = exp_tail_wbnt;
+temp_SW_exp.bouts.wake.half_trans.exp_tail = exp_tail_wbht;
+temp_SW_exp.bouts.sleep.no_trans.exp_tail = exp_tail_sbnt;
+temp_SW_exp.bouts.sleep.prev_trans.exp_tail = exp_tail_sbpt;
+temp_SW_exp.bouts.sleep.half_trans.exp_tail = exp_tail_sbht;
+
+temp_SW_exp.sim_title = sim_title;
+
+plot_SW_bouts_PL_results(temp_SW_exp);
 
 %% Output arguments
 varargout{1} = PL_sbpt;

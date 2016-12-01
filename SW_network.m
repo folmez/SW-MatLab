@@ -6,15 +6,16 @@ save_entire_workspace = 0;
 
 which_process = 'two-state';    % 'two-state' or 'three-state'
 
-% (ER) Erdos-Renyi or (SF) Scale-free or (SF-Chung-Lu) or Star
-wake_graph = 'ER';
-sleep_graph = 'ER';
-% Size - parameter
-nW = 100; parW = 3.00;
-nS = 100; parS = 3.00;
-% Average inhibitory degree when inhibitin rule is ER-like
-inh_parW = 8.;
-inh_parS = 8.;
+% 1: (ER) Erdos-Renyi or (SF) Scale-free or (SF-Chung-Lu) or Star
+% 2: Size
+% 3: Average degree
+wake_graph = 'ER';  nW = 100;   parW = 2.70;
+sleep_graph = 'ER'; nS = 100;   parS = 4.00;
+% 1: Average inhibitory degree
+% 2: 'ER-like' or 'SF-like'
+inh_parW = 6.00;    WS_inh_rule = 'ER-like';
+inh_parS = 3.50;    SW_inh_rule = 'SF-like';
+
 % Note: dE/dI must be in (0.086,0.73) when LE/LI = 16 for a bi-stable
 % process
 
@@ -22,17 +23,16 @@ inh_parS = 8.;
 lambda_i = 0.001;
 lambda_e = 0.016;
 
-% p -value estimation of power-law fits to bouts
-fit_PL = 1;
-nr_reps = 25;
-display_p_val_stuff = 0;
-need_apKS = 0;
+use_sample_experiment = 0;
+which_sample_experiment = 0;
 
 compute_domains = 1;
 compute_bouts = 1;
-
-use_sample_experiment = 0;
-which_sample_experiment = 0;
+fit_PL = 1;
+fit_exp = 1;
+nr_reps = 25;
+display_p_val_stuff = 0;
+need_apKS = 0;
 
 i=1;
 while i<=length(varargin),
@@ -72,21 +72,15 @@ while i<=length(varargin),
     i = i+2;
 end
 
-WS_inh_rule = 'ER-like';
-SW_inh_rule = 'ER-like';
-
 display_event_sim_summary = 0;
 
 plot_simulation = 1;
-plot_bout_dist = 0;
 plot_heat_map = 1;
-plot_degree_dist = 0;
+plot_degree_dist = 1;
 plot_pdfs_for_all_intervals = 1;
 plot_sample_trajectories = 0;
 
 calculate_drift_diffusion = 0;
-
-fit_exp_to_tail = 1;
 
 % Firing and relaxation rates
 lambda_b = 0.003;
@@ -172,19 +166,15 @@ for i=2:nr_events
     % Show surface at an intermediate time to confirm bistability for
     % single runs
     if i == 1e5
-        A = accumarray([(WE(1:min(nr_events,1e5))+1) ...
-            (SE(1:min(nr_events,1e5))+1)], 1, [nW+1 nS+1]);
-        figure
-        surf(A);
-        axis tight;
-        title('Press a key to continue if bi-stable...', 'FontSize', 20);
-        drawnow;
-        pause;
+        A = accumarray([(WE(1:min(nr_events,i))+1) ...
+            (SE(1:min(nr_events,i))+1)], 1, [nW+1 nS+1]);
+        plot_SE_WE_heat_map(A, sim_title, 1, 'pause_after_plot', 1);
     end
 end
 fprintf('Competitive graph model simulation took %3.2f minutes\n', ...
     toc(tSIM)/60);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Mean Field ODE stable equilibrium solutions
 [~, ~] = MF_model(WI(1)/nW, WE(1)/nW, SI(1)/nS, SE(1)/nS, ...
@@ -193,14 +183,7 @@ fprintf('Competitive graph model simulation took %3.2f minutes\n', ...
 
 %% Plot heat map (rows represent WE+1, columns represetnt SE+1)
 A = accumarray([(WE+1) (SE+1)], 1, [nW+1 nS+1]);
-if plot_heat_map
-    figure,
-    surf(A);
-    title(sim_title);
-    axis tight;
-    xlabel('# of excited SLEEP nodes');
-    ylabel('# of excited WAKE nodes');
-end
+plot_SE_WE_heat_map(A, sim_title, plot_heat_map);
 
 %% Compute activity domains using transition path based assignment
 [duration_matrix, wake_active_domain, sleep_active_domain] = ...
@@ -221,11 +204,12 @@ end
     sleep_bouts_prev_trans, wake_bouts_prev_trans, ...
     sleep_intervals, wake_intervals, ...
     sleep_bouts_half_trans, wake_bouts_half_trans, ...
-    display_p_val_stuff, nr_reps, fit_PL, fit_exp_to_tail);
+    display_p_val_stuff, nr_reps, fit_PL, fit_exp, need_apKS, ...
+    sim_title);
 
 %% Calculate drift-diffusion coefficients
-[F, D, F_WE, D_WE, F_SE, D_SE] = do_drift_diffusion_analysis(...
-    [nW nS], sim_title, t, WE, SE);
+[F, D, F_WE, D_WE, F_SE, D_SE] = do_SW_drift_diffusion_analysis(...
+    [nW nS], sim_title, t, WE, SE, calculate_drift_diffusion);
 
 %% %% Record simulation results in a single structure
 SW_exp = record_sim(sim_title, nr_events, ...
@@ -241,16 +225,10 @@ SW_exp = record_sim(sim_title, nr_events, ...
     F, D, F_WE, D_WE, F_SE, D_SE, ...
     use_gillespie_algorithm);
 
-%% Save workspace
-filename = ['saved_workspaces/network_' which_process '_' ...
-    wake_graph '_' num2str(nW) '_' num2str(dW) '_' num2str(dIW) '_' ...
-    sleep_graph '_' num2str(nS) '_' num2str(dS) '_' num2str(dIS) '_' ...
-    datestr(now,'mmmdd_HHMMSS') '.mat'];
-if save_entire_workspace
-    save([filename(1:end-4) '_ENTIRE.mat']);
-elseif save_workspace
-    save(filename,'experiment');
-end
+%% Plot sample SE(t) and WE(t) trajectories
+plot_sample_SE_WE_trajectories(duration_matrix, wake_active_domain, ...
+    sleep_active_domain, SE, WE, sim_title, nS, nW, ...
+    plot_sample_trajectories);
 
 %% Check outputs
 if strcmp(which_process,'two-state') && ...
@@ -258,65 +236,15 @@ if strcmp(which_process,'two-state') && ...
     error('Sum of excited and inhibited nodes don''t make n!!!')    
 end
 
-%% Plot stuff
-
-% Plot sample trajectories
-if plot_sample_trajectories
-    make_movie_from_bout_trajs = 0;
-    what_type_of_bouts = [-1];
-    
-    min_bout_size = 0;
-    max_bout_size = inf;
-    nr_bout_trajs = 50;
-    pause_after_figure = 1;
-    
-    if make_movie_from_bout_trajs, close all, end
-    
-    for i=1:nr_bout_trajs
-        bout_index_set = find(duration_matrix(:,1) > min_bout_size & ...
-            duration_matrix(:,1) < max_bout_size);
-        bout_index = bout_index_set(randperm(length(bout_index_set),1));
-        while ~ismember(duration_matrix(bout_index,2),what_type_of_bouts)
-            bout_index = bout_index_set( ...
-                randperm(length(bout_index_set),1));
-        end
-        
-        figure, hold on;
-        plot(wake_active_domain(:,2), wake_active_domain(:,1), 'bo');
-        plot(sleep_active_domain(:,2), sleep_active_domain(:,1), 'gd');
-        
-        for j = 0:2
-            bout_begin_time = sum(duration_matrix(1:bout_index+j-1,1));
-            bout_end_time = bout_begin_time + ...
-                duration_matrix(bout_index+j,1);
-            bout_type = duration_matrix(bout_index+j,2);
-            
-            traj_index_set_min = find(t >= bout_begin_time,1);
-            traj_index_set_max = find(t > bout_end_time,1);
-            traj_index_set = (traj_index_set_min:traj_index_set_max-1)';
-            if bout_type==-1
-                str_bout_type = 'Sleep';
-                plot(SE(traj_index_set(1)), WE(traj_index_set(1)), 'g*');
-                plot(SE(traj_index_set), WE(traj_index_set), 'g.-');
-            elseif bout_type==1
-                str_bout_type = 'Wake';
-                plot(SE(traj_index_set(1)), WE(traj_index_set(1)), 'b*');
-                plot(SE(traj_index_set), WE(traj_index_set), 'b.-');
-            elseif bout_type==0
-                str_bout_type = 'Transition';
-                plot(SE(traj_index_set(1)), WE(traj_index_set(1)), 'k*');
-                plot(SE(traj_index_set), WE(traj_index_set), 'k.-');
-            end
-            %plot(SE(traj_index_set(1)), WE(traj_index_set(1)), 'r*');
-            %plot(SE(traj_index_set(end)), WE(traj_index_set(end)), 'k*');
-        end
-        legend(sim_title,'Location','Best');
-        axis([0 nS+1 0 nW+1]); xlabel('SE'); ylabel('WE');
-        title(['Sample ' str_bout_type ' bout, size = ' ...
-            num2str(duration_matrix(bout_index,1))]);
-        
-        if pause_after_figure, pause; end
-    end
+%% Save workspace
+filename = ['../saved_workspaces/network_' which_process '_' ...
+    wake_graph '_' num2str(nW) '_' num2str(dW) '_' num2str(dIW) '_' ...
+    sleep_graph '_' num2str(nS) '_' num2str(dS) '_' num2str(dIS) '_' ...
+    datestr(now,'mmmdd_HHMMSS') '.mat'];
+if save_entire_workspace
+    save([filename(1:end-4) '_ENTIRE.mat']);
+elseif save_workspace
+    save(filename,'experiment');
 end
 
 end

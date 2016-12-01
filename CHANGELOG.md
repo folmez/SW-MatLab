@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.0.3 - 2016-12-01
+### Changed
+- Minor changes
+
+## Added
+- "plot_SE_WE_heat_map.m" is added. All related parts of "SE_network.m" are moved there.
+- "plot_sample_SE_WE_trajectories.m" is added. All related parts of "SW_network.m" are moved there.
+
 ## 0.0.2 - 2016-11-30
 ### Changed
 - Minor changes in "generate_random_graph.m"

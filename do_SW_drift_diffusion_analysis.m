@@ -6,6 +6,7 @@ sim_title = varargin{2};
 t = varargin{3};
 WE = varargin{4};
 SE = varargin{5};
+calculate_drift_diffusion = varargin{6};
 
 plot_DDE_stuff = 0;
 
