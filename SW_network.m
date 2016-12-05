@@ -13,8 +13,8 @@ wake_graph = 'ER';  nW = 100;   parW = 2.70;
 sleep_graph = 'ER'; nS = 100;   parS = 4.00;
 % 1: Average inhibitory degree
 % 2: 'ER-like' or 'SF-like'
-inh_parW = 6.00;    WS_inh_rule = 'ER-like';
-inh_parS = 3.50;    SW_inh_rule = 'SF-like';
+inh_parW = 3.00;    WS_inh_rule = 'ER-like';
+inh_parS = 2.50;    SW_inh_rule = 'SF-like';
 
 % Note: dE/dI must be in (0.086,0.73) when LE/LI = 16 for a bi-stable
 % process

@@ -4,11 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.0.4 - 2016-12-05
+### Changed
+- Minor changes in Chung-Lu.
+
+### Added
+- A new option is added to "generate_inhibitory_links". Previously, power-law exponent determination was weird. Now, it is more systematic.
+
 ## 0.0.3 - 2016-12-01
 ### Changed
 - Minor changes
 
-## Added
+### Added
 - "plot_SE_WE_heat_map.m" is added. All related parts of "SE_network.m" are moved there.
 - "plot_sample_SE_WE_trajectories.m" is added. All related parts of "SW_network.m" are moved there.
 
