@@ -7,10 +7,12 @@ m = sum(k)/2;
 n = length(k);      % Number of nodes
 plot_stuff = 0;
 display_stuff = 0;
+
 %% Check inputs
 if max(k)>n
     error('FO: Inputted degrees cannot be larger than n-1!')
 end
+
 %% Model
 % An edge (i,j)=(j,i) will be formed with probability (k_i*k_j)/(2m). Self
 % edges and multiple edges are not allowed.
@@ -55,6 +57,7 @@ if display_stuff
     fprintf('     Average input degree: %3.2f\n', mean(k));
     fprintf('Average simulation degree: %3.2f\n', mean(degrees));
 end
+
 %% Plot results
 if plot_stuff
     figure,
@@ -66,6 +69,7 @@ if plot_stuff
     %     title('Relative difference between Expected Degree and Degree ');
     xlabel('Node (degree increasing from left to right)');
 end
+
 %% Outputs
 varargout{1} = A;
 varargout{2} = nr_zero_deg_nodes;

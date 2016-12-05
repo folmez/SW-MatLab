@@ -1,7 +1,9 @@
 function varargout = scale_free_graph_generation(varargin)
-% Chung-Lu model, below, generates 0-degree nodes. This function generates
-% a random network with no 0-degree nodes. 
+% Note: Original Chung-Lu model (chung_lu.m) generates 0-degree nodes. This
+% function generates a random network with no 0-degree nodes.
+
 addpath ../../power-law-estimator/
+
 %% Model parameters
 n = varargin{1};
 alpha = varargin{2};
@@ -9,7 +11,7 @@ zero_degree_status = varargin{3};   % 'zero degree is ok'
                                     % 'zero degree is not ok'
 display_stuff = 0;
 plot_stuff = 0;
-% ------------------------------------------------------------------------
+
 i = 4;
 while i<=length(varargin),
     switch varargin{i},
@@ -21,8 +23,9 @@ while i<=length(varargin),
     end
     i = i+2;
 end
-% ------------------------------------------------------------------------
+
 use_discrete_epl1 = 1;
+
 %% Model
 new_n = n;
 i = 1;

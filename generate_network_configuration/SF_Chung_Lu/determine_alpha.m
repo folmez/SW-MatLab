@@ -19,15 +19,16 @@ end
 % Find the minimum the distance from the goal mean
 [~, I] = min(abs(mean_vec-goal_mean));
 alpha = alpha_vec(I);
-mean = mean_vec(I);
+dist_mean = mean_vec(I);
 
 %% Display
 if display_stuff
     fprintf('         Goal mean: %3.2f\n', goal_mean);
-    fprintf('Power-law exponent: %3.2f\n', alpha_vec(I));
-    fprintf('    Power-law mean: %3.2f\n', mean_vec(I));
+    fprintf('Power-law exponent: %3.2f\n', alpha);
+    fprintf('    Power-law mean: %3.2f\n', dist_mean);
 end
 
 %% Outputs
 varargout{1} = alpha;
+varargout{2} = dist_mean;
 end
