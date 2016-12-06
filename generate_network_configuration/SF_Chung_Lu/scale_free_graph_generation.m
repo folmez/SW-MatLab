@@ -72,9 +72,9 @@ while 1
 end
 
 % Permute adjacency matrix because hubs are at the bottom
-node_perm = randperm(n);
-A_perm = zeros(n);
-for i = 1:n
+node_perm = randperm(new_n);
+A_perm = zeros(new_n);
+for i = 1:new_n
     A_perm(i,:) = A(node_perm(i), node_perm);
 end
 A = A_perm;
