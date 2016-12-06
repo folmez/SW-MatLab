@@ -37,6 +37,20 @@ need_apKS = 0;
 i=1;
 while i<=length(varargin),
     switch varargin{i},
+        case 'WW'
+            wake_graph = varargin{i+1}{1};
+            nW = varargin{i+1}{2};
+            parW = varargin{i+1}{3};
+        case 'WS'
+            WS_inh_rule = varargin{i+1}{1};
+            inh_parW = varargin{i+1}{2};
+        case 'SS'
+            sleep_graph = varargin{i+1}{1};
+            nS = varargin{i+1}{2};
+            parS = varargin{i+1}{3};
+        case 'SW'
+            SW_inh_rule = varargin{i+1}{1};
+            inh_parS = varargin{i+1}{2};
         case 'use_sample_experiment'
             use_sample_experiment = varargin{i+1}(1);
             which_sample_experiment = varargin{i+1}(2);
