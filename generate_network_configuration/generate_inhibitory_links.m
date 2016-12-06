@@ -79,7 +79,8 @@ elseif strcmp(rule, 'SF-like')
         original_inhPar = inhPar;
         [alpha, inhPar] = determine_alpha(nO+1, original_inhPar, 0);
         fprintf('\nInhibition degree may have been refined.\n');
-        fprintf('Initially = %1.4f, Now = %1.4f', original_inhPar, inhPar);        
+        fprintf('Initially = %1.4f, Now = %1.4f\n', ...
+            original_inhPar, inhPar);        
     end
     
     % Display inhibition summary

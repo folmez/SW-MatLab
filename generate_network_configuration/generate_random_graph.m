@@ -42,7 +42,9 @@ if strcmp(type,'ER')
         flag = true;
         current_best_mean_degree_error = 1;
         
+        counter = 0;
         while flag
+            counter = counter+1;
             temp = rand(N)<p_N;
             temp = triu(temp,1);
             adjacency_matrix = temp + temp';
@@ -55,21 +57,26 @@ if strcmp(type,'ER')
                 if display_all_results
                     disp('Zero degree!');
                 end
-                %         elseif mean_degree_error > mean_tolerance
             elseif mean_degree_error ~= 0
                 flag=true;
-                % Report best mean degree found, since this consumes a good amount
-                % of simulation time
-                if isgraphconnected(adjacency_matrix)
-                    if display_all_results
-                        disp('Not within better mean degree range!');
-                    end
-                    if current_best_mean_degree_error > mean_degree_error && ...
-                            display_best_mean_degree_so_far_results
-                        current_best_mean_deg = mean(sum(adjacency_matrix),2);
-                        current_best_mean_degree_error = mean_degree_error;
-                        fprintf('\tBest mean degree so far is %2.2f with %i edges\n', ...
-                            current_best_mean_deg, sum(sum(adjacency_matrix))/2);
+                % Report best mean degree found, since this consumes a good
+                % amount of simulation time
+                if current_best_mean_degree_error > mean_degree_error
+                    if isgraphconnected(adjacency_matrix)
+                        if display_all_results
+                            disp('Not within better mean degree range!');
+                        end
+                        if display_best_mean_degree_so_far_results
+                            current_best_mean_deg = ...
+                                mean(sum(adjacency_matrix), 2);
+                            current_best_mean_degree_error = ...
+                                mean_degree_error;
+                            fprintf('#%i:\t', counter);
+                            fprintf('Best mean degree so far is ');
+                            fprintf('%2.2f ', current_best_mean_deg);
+                            fprintf('with %i edges\n', ...
+                                sum(sum(adjacency_matrix))/2);
+                        end
                     end
                 end
             else
@@ -155,7 +162,7 @@ elseif strcmp(type,'SF')
 elseif strcmp(type, 'SF-Chung-Lu')
     %% Added on 10-9-2016
     addpath generate_network_configuration/SF_Chung_Lu/
-    addpath ../power-law-estimator/
+    addpath ../../power-law-estimator/
     
     mean_degree_goal = par1;  
     nr_edges_hat = mean_degree_goal*N;
@@ -164,27 +171,45 @@ elseif strcmp(type, 'SF-Chung-Lu')
     end
     % Determine alpha such that discrete EPL1 distribution on [1, n-1] has
     % the same mean as the input
-    alpha = determine_alpha(N, mean_degree_goal, 1);
-
+    orig_mean_deg_goal = mean_degree_goal;
+    [alpha, mean_degree_goal] = determine_alpha(N, orig_mean_deg_goal, 0);
+    fprintf('Mean degree may have been refined.\n');
+    fprintf('Initially = %1.4f, Now = %1.4f\n', ...
+        orig_mean_deg_goal, mean_degree_goal);
+    
+    % Modify network parameters accordinly
+    floor_val = floor(mean_degree_goal*N);
+    ceil_val = ceil(mean_degree_goal*N);
+    if mod(floor_val, 2) == 0
+        nr_edges_hat = floor_val;
+    elseif mod(ceil_val, 2) == 0
+        nr_edges_hat = ceil_val;
+    end
+    mean_degree_goal = nr_edges_hat/N;
+    
     fprintf('\tN = %i, #edges = %i, alpha = %1.2f, d = %2.3f \n', ...
         N, nr_edges_hat, alpha, mean_degree_goal);
     
     current_best_mean_degree_error = inf;
+    counter = 0;
     while 1
+        counter = counter+1;
         [adjacency_matrix, degrees] = ...
-            scale_free_graph_generation(N, alpha);
+            scale_free_graph_generation(N, alpha, 'zero degree is not ok');
         mean_degree_error = abs(mean(degrees)-mean_degree_goal);
-        if isgraphconnected(adjacency_matrix)            
-            if current_best_mean_degree_error > mean_degree_error && ...
-                    display_best_mean_degree_so_far_results
-                current_best_mean_deg = mean(degrees);
-                current_best_mean_degree_error = mean_degree_error;
-                fprintf(['Best mean degree so far is %2.2f ' ...
-                    'with %i edges\n'], current_best_mean_deg, ...
-                    sum(sum(adjacency_matrix))/2);
-            end
-            if mean_degree_error < mean_degree_tolerance
-                break;
+        if current_best_mean_degree_error > mean_degree_error
+            if isgraphconnected(adjacency_matrix)
+                if display_best_mean_degree_so_far_results
+                    current_best_mean_deg = mean(degrees);
+                    current_best_mean_degree_error = mean_degree_error;
+                    fprintf('#%i:\t', counter);
+                    fprintf(['Best mean degree so far is %2.2f ' ...
+                        'with %i edges\n'], current_best_mean_deg, ...
+                        sum(sum(adjacency_matrix))/2);
+                end
+                if mean_degree_error < mean_degree_tolerance
+                    break;
+                end
             end
         end
     end   
