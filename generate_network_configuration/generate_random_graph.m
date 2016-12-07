@@ -1,11 +1,11 @@
 function [mean_degree, adjacency_matrix] = generate_random_graph(varargin)
-% ------------------------------------------------------------------------
+%% Input parameters
 type = varargin{1};
 nr_nodes = varargin{2};
 par1 = varargin{3};
 display_all_results = 0;
 mean_degree_tolerance = 0.015;
-% ------------------------------------------------------------------------
+
 i=4;
 while i<=length(varargin),
     switch varargin{i},
@@ -17,14 +17,15 @@ while i<=length(varargin),
     end
     i = i+2;
 end
-% ------------------------------------------------------------------------
+
 display_best_mean_degree_so_far_results = 1;
 fprintf('Generating %s random graph with parameters...\n', type);
-% ------------------------------------------------------------------------
+
 tSIM = tic;
 N = nr_nodes;
 adjacency_matrix = zeros(N);
 
+%% Model
 if strcmp(type,'ER') 
     %% Erdos-Renyi
     if par1 > 1
@@ -216,14 +217,18 @@ elseif strcmp(type, 'SF-Chung-Lu')
         
 elseif strcmp(type,'Star')
     adjacency_matrix(1,2:end) = 1;
+    
 elseif strcmp(type,'Special tree')
     for i=1:floor((N-1)/2)
         adjacency_matrix(i,2*i:2*i+1)=1;
     end
     adjacency_matrix(floor(N/2),N)=1;
+    
 else
     error('WHAT THE HELL IS THE NETWORK???');
+    
 end
+
 % adjacency_matrix
 mean_degree = sum(sum(adjacency_matrix))/N;
 % mean degree for Erdos-Renyi graph is N*p(N)
@@ -231,7 +236,8 @@ mean_degree = sum(sum(adjacency_matrix))/N;
 fprintf('\tDesired mean degree achieved = %6.4f\n', mean_degree);
 fprintf('\tTime spent = %3.2f minutes\n\n',toc(tSIM)/60);
 end
-% ----------------------------------------------------------------------
+
+%% Is the graph connnected?
 function connected_or_not = isgraphconnected(G)
 % G is a (symmetric) adjaceny matrix
 N = length(G);
