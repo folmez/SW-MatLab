@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.0.6 - 2016-12-07
+### Fixed
+- The function name in "update_SW_network.m" is corrected.
+
+### Changed
+- Event probabilities are changed for the two-state neuron for simulation time improvement.
+- addpath ../../power-law-estimator removed from "scale_free_graph_generation.m". It was taking too much time when called too many times in a loop.
+- Minor changes in "generate_random_graph.m".
+
 ## 0.0.5 - 2016-12-06
 ### Fixed
 - Fixed zero degree removal in "scale_free_graph_generation.m".

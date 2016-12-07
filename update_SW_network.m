@@ -1,4 +1,4 @@
-function [W, S, wait_time] = update_two_network_process(varargin)
+function [W, S, wait_time] = update_SW_network(varargin)
 %% Input parameters
 i = varargin{1};            % Simulation event number
 W = varargin{2};            % Wake network state vector
@@ -21,14 +21,14 @@ rE = varargin{17};          % Relaxation rate of an (E)xcited node
 use_gillespie_algorithm = varargin{18};
 display_sim_summary = varargin{19};
 which_process = varargin{20};   % 'two-state' or 'three-state'
-%------------------------------------------------------------------
+
 display_details = 0;
-if strcmp(which_process,'three-state')
+if strcmp(which_process, 'three-state')
     bump_step_size = 1;
-elseif strcmp(which_process,'two-state')
+elseif strcmp(which_process, 'two-state')
     bump_step_size = 2;
 end
-%------------------------------------------------------------------
+
 %% Model
 if use_gillespie_algorithm
     total_rate = WI(i-1)*ri + WE(i-1)*rE + SI(i-1)*ri + SE(i-1)*rE +...
@@ -36,9 +36,15 @@ if use_gillespie_algorithm
         SI(i-1)*lambda_i + (nS-SI(i-1)-SE(i-1))*lambda_b + SE(i-1)*lambda_e;
     % Total_rate
     wait_time = exprnd(1/total_rate);
-    prob_events = [(W==-1)*lambda_i + (W==0)*lambda_b + (W==1)*lambda_e;...
-        (S==-1)*lambda_i + (S==0)*lambda_b + (S==1)*lambda_e;...
-        (W==-1)*ri + (W==1)*rE; (S==-1)*ri + (S==1)*rE]/total_rate;
+    if strcmp(which_process, 'three-state')
+        prob_events = [(W==-1)*lambda_i + (W==0)*lambda_b + (W==1)*lambda_e;...
+            (S==-1)*lambda_i + (S==0)*lambda_b + (S==1)*lambda_e ; ...
+            (W==-1)*ri + (W==1)*rE; (S==-1)*ri + (S==1)*rE]/total_rate;
+    elseif strcmp(which_process, 'two-state')
+        prob_events = [(W==-1)*lambda_i + (W==1)*lambda_e ; ...
+            (S==-1)*lambda_i + (S==1)*lambda_e ; ...
+            zeros(nW+nS,1)]/total_rate;
+    end
     cum_prob_events = cumsum(prob_events);
     cum_prob_events(prob_events==0) = 0;
     % cum_prob_events
