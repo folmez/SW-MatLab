@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.0.7 - 2016-12-08
+### Added
+- A new activity domain computation method is added, "compute_wake_sleep_domains_3.m". This method, as opposed to the previous ones, does not rely on contor lines being connected and anything like that. It searches the heat map from bottom to top and splits into two clusters using MatLab's built-in k-means function. If clusters are distant enough, method stops and identifies activity domains.
+
+### Changed
+- Minor changes in "generate_random_graph.m".
+
 ## 0.0.6 - 2016-12-07
 ### Fixed
 - The function name in "update_SW_network.m" is corrected.
