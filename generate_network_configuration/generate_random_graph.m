@@ -90,6 +90,10 @@ if strcmp(type,'ER')
     else
         % USE WILSON'S LOOP-ERASING RANDOM WALK APPROACH TO GENERATE A
         % UNIFORM SPANNING TREE OF THE COMPLETE GRAPH 
+        fprintf('Using Wilson''s loop-erasing random walk approach\n');
+        fprintf('to generate a uniform spanning tree of the complete\n');
+        fprintf('graph. This works faster when the graph is a tree.\n');
+        
         adjacency_matrix = zeros(N);
         discovered_nodes = zeros(N,1);
         
@@ -126,7 +130,7 @@ elseif strcmp(type,'SF')
     % new vertex
     if ~ismember(par1_hat, [1 2 3 4 5])
         error('Scale-free graph can have 2,4,6,8,10 average connections!!!');
-    end
+    end    
     
     seed =[ 0 1 0 0 1; 1 0 0 1 0; 0 0 0 1 0; 0 1 1 0 0; 1 0 0 0 0];
     mlinks = par1_hat;
@@ -159,6 +163,10 @@ elseif strcmp(type,'SF')
         end
         flag=~isgraphconnected(adjacency_matrix);
     end
+    
+    fprintf('BA algorithm may change the mean degree.\n');
+    fprintf('Intially = %1.2f, Now = %1.2f\n', ...
+        par1, sum(sum(adjacency_matrix))/N);
     
 elseif strcmp(type, 'SF-Chung-Lu')
     %% Added on 10-9-2016
