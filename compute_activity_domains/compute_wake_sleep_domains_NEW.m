@@ -3,12 +3,12 @@ function [wad, sad] = compute_wake_sleep_domains_NEW(varargin)
 %   COMPUTE_WAKE_SLEEP_DOMAINS_NEW computes wake and sleep domains for a 
 %   given simulated (WE(t),SE(t)). An error is displayed if there is only 
 %   one state.
-% ------------------------------------------------------------------------
+%% Input parameters
 nW = varargin{1}(1);
 nS = varargin{1}(2);
 sim_title = varargin{2};
 A = varargin{3};
-% ------------------------------------------------------------------------
+
 i = 8;
 while i<=length(varargin),
     switch varargin{i},
@@ -18,7 +18,7 @@ while i<=length(varargin),
     end
     i = i+2;
 end
-% ------------------------------------------------------------------------
+
 % STAGE 1
 % Rough detection of domains
 nr_test_levels = 50;
@@ -137,8 +137,8 @@ set(h_legend,'FontSize',15);
 wad = wad - 1;
 sad = sad - 1;
 end
-% ------------------------------------------------------------------------
-% ------------------------------------------------------------------------
+
+%% IS DOMAIN CONNECTED?
 function flag = is_domain_connected(nW, nS, x, y, i)
 plot_stuff = 0;
 
@@ -213,8 +213,8 @@ if plot_stuff
     close
 end
 end
-% ------------------------------------------------------------------------
-% ------------------------------------------------------------------------
+
+%% Find largest connected superset
 function lcss = find_largest_connected_superset(nW, nS, B, single_element)
 % Initiate the first subset
 lcss = zeros((nW+1)*(nS+1),2); % Largest Connected Superset
