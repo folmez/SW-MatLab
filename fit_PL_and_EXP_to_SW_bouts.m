@@ -1,5 +1,5 @@
 function varargout = fit_PL_and_EXP_to_SW_bouts(varargin)
-addpath ../power-law-estimator/
+addpath ../../power-law-estimator/
 
 %% Input arguments
 sleep_bouts_prev_trans = varargin{1};
@@ -67,17 +67,17 @@ end
 % Fit exponential distribution to bout tails
 if fit_exp
     exp_tail_sbpt = fit_exponential_to_tail(sleep_bouts_prev_trans, ...
-        'plot_stuff', 0);
+        'plot_stuff', 0, 'display_p_val_stuff', display_p_val_stuff);
     exp_tail_wbpt = fit_exponential_to_tail(wake_bouts_prev_trans, ...
-        'plot_stuff', 0);
+        'plot_stuff', 0, 'display_p_val_stuff', display_p_val_stuff);
     exp_tail_sbnt = fit_exponential_to_tail(sleep_intervals, ...
-        'plot_stuff', 0);
+        'plot_stuff', 0, 'display_p_val_stuff', display_p_val_stuff);
     exp_tail_wbnt = fit_exponential_to_tail(wake_intervals, ...
-        'plot_stuff', 0);
+        'plot_stuff', 0, 'display_p_val_stuff', display_p_val_stuff);
     exp_tail_sbht = fit_exponential_to_tail(sleep_bouts_half_trans, ...
-        'plot_stuff', 0);
+        'plot_stuff', 0, 'display_p_val_stuff', display_p_val_stuff);
     exp_tail_wbht = fit_exponential_to_tail(wake_bouts_half_trans, ...
-        'plot_stuff', 0);
+        'plot_stuff', 0, 'display_p_val_stuff', display_p_val_stuff);
 else
     exp_tail_sbpt = [];
     exp_tail_wbpt = [];

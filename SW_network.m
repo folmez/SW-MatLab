@@ -27,6 +27,7 @@ use_sample_experiment = 0;
 which_sample_experiment = 0;
 
 compute_domains = 1;
+pause_to_see_domains = 1;
 compute_bouts = 1;
 fit_PL = 1;
 fit_exp = 1;
@@ -59,6 +60,8 @@ while i<=length(varargin),
         case 'nr_events',           nr_events = varargin{i+1};
         case 'compute_domains',     compute_domains = varargin{i+1};
         case 'compute_bouts',       compute_bouts = varargin{i+1};
+        case 'pause_to_see_domains',
+            pause_to_see_domains = varargin{i+1};
         case 'firing_rates'
             lambda_i = varargin{i+1}(1);
             lambda_e = varargin{i+1}(2);
@@ -91,7 +94,7 @@ display_event_sim_summary = 0;
 plot_simulation = 1;
 plot_heat_map = 1;
 plot_degree_dist = 1;
-plot_pdfs_for_all_intervals = 1;
+plot_pdfs_for_all_intervals = 0;
 plot_sample_trajectories = 0;
 
 calculate_drift_diffusion = 0;
@@ -182,7 +185,8 @@ for i=2:nr_events
     if i == 1e5
         A = accumarray([(WE(1:min(nr_events,i))+1) ...
             (SE(1:min(nr_events,i))+1)], 1, [nW+1 nS+1]);
-        plot_SE_WE_heat_map(A, sim_title, 1, 'pause_after_plot', 1);
+        plot_SE_WE_heat_map(A, sim_title, 1, ...
+            'pause_after_plot', pause_to_see_domains);
     end
 end
 fprintf('Competitive graph model simulation took %3.2f minutes\n', ...
